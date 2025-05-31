@@ -1,0 +1,19 @@
+import subprocess
+from pathlib import Path
+
+configfile: "workflow/config/config.yaml"
+
+reference_fasta = Path(config['ref_fna']).name
+ref_base = Path(reference_fasta).with_suffix('')
+main_dir = "results"
+
+wildcard_constraints:
+    SRR = r"[R-S0-9]{10}"
+
+include: "rules/alignment.smk"
+include: "rules/ref_processing.smk"
+include: "rules/haplotype_caller.smk"
+
+rule all:
+    input:
+        variants = "results/SRR3722033/call_variants_via_haplotype_caller/variants.vcf.gz"
