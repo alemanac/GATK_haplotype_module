@@ -1,0 +1,7 @@
+ref_fna: "resources/BW25113.fna"
+
+local_tree:
+- "SRR3722033" #sample 162
+- "SRR3722007" #sample 139
+- "SRR3721984" #sample 118
+- "SRR3721971" #sample_106 (this probably isn't the most efficient way of doing this, but I'm unsure how to otherwise with expand
