@@ -1,6 +1,6 @@
 rule call_variants_via_haplotype_caller:
     input:
-        dupmarked_sorted_filtered_reads = "{main_dir}/{SRR}/filter_out_poor_reads/aligned.bam",
+        reads = "{main_dir}/{SRR}/gen_mq_filtered_reads/reads.bam",
         ref = f"{main_dir}/{ref_base}/ref_processing/{reference_fasta}"
     output:
         variants = "{main_dir}/{SRR}/call_variants_via_haplotype_caller/variants.vcf.gz"
@@ -17,6 +17,6 @@ rule call_variants_via_haplotype_caller:
         gatk --java-version "-Xms3000m" HaplotypeCaller \
         --reference {input.ref} \
         --sample_ploidy {params.sample_ploidy} \
-        --input {input.dupmarked_sorted_filtered_reads} \
+        --input {input.reads} \
         --output {output.variants} 2> {log.stderr} > {log.stdout}
         """
