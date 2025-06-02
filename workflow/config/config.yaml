@@ -1,6 +1,12 @@
+#use_only_local_container: False
+
+java_options: "Xms3000m"
+
 ref_fna: "resources/BW25113.fna"
 
-#use_only_local_container: False
+read_group_library: "NA"
+read_group_platform: "NA"
+read_group_platform_unit: "NA"
 
 local_tree:
 - "SRR3722033" #sample 162

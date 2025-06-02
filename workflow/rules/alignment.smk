@@ -3,11 +3,27 @@ ref_base = Path(reference_fasta).with_suffix('')
 
 #TODO: trim with cutadapt as specified in the paper
 
+rule gen_bam_index:
+    input:
+        reads = "{main_dir}/{SRR}/gen_duplicates_marked_reads/reads.bam"
+    output:
+        bam_index = "{main_dir}/{SRR}/gen_bam_index/reads.bai"
+    log:
+        stderr = "{main_dir}/{SRR}/gen_bam_index/stderr",
+        stdout = "{main_dir}/{SRR}/gen_bam_index/stdout"
+    container:
+        "docker://broadinstitute/gatk"
+    shell:
+        """
+        samtools index -b {input.reads} {output.bam_index} 2> {log.stderr} > {log.stdout}
+        """
+
 rule gen_mq_filtered_reads:
     input:
         reads = "{main_dir}/{SRR}/gen_duplicates_marked_reads/reads.bam"
     output:
-        mq_filtered_reads = "{main_dir}/{SRR}/gen_mq_filtered_reads/reads.bam"
+        mq_filtered_reads = "{main_dir}/{SRR}/gen_mq_filtered_reads/reads.bam",
+        reads_index = "{main_dir}/{SRR}/gen_mq_filtered_reads/reads.bam.bai"
     params:
         minimum_mq = "10"
     log:
@@ -21,7 +37,9 @@ rule gen_mq_filtered_reads:
         --min-MQ 10 \
         --bam \
         --output {output.mq_filtered_reads} \
-        {input.reads} 2> {log.stderr} > {log.stdout}
+        {input.reads} 2> {log.stderr} > {log.stdout}; \
+
+        samtools index {output.mq_filtered_reads} 2>> {log.stderr} > {log.stdout}
         """
 
 #TODO: consider playing with the optical_duplicate_pixel_distance
@@ -57,10 +75,13 @@ rule gen_read_group_added_reads:
     container: "docker://broadinstitute/gatk"
     shell:
         """
-        samtools addreplacerg \
-        -r '@RG\tID:A\' \
-        -o {output.read_group_added_reads} \
-        {input.reads} 2> {log.stderr} > {log.stdout}
+        gatk --java-options "-Xms3000m" AddOrReplaceReadGroups \
+        --INPUT {input.reads} \
+        --OUTPUT {output.read_group_added_reads} \
+        --RGLB {config[read_group_library]} \
+        --RGPL {config[read_group_platform]} \
+        --RGPU {config[read_group_platform_unit]} \
+        --RGSM {wildcards.SRR} 2> {log.stderr} > {log.stdout}
         """
 
 

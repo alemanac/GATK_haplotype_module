@@ -16,4 +16,6 @@ include: "rules/haplotype_caller.smk"
 
 rule all:
     input:
-        variants = "results/SRR3722033/call_variants_via_haplotype_caller/variants.vcf.gz"
+        variants_haplotype_caller = "results/SRR3722033/call_variants_via_haplotype_caller/variants.vcf",
+        variants_M2 = "results/SRR3722033/gen_mutect2_vcfs/variants.vcf",
+        filtered_vcf = "results/SRR3722033/gen_filtered_vcfs/filtered.vcf"
