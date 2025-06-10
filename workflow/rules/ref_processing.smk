@@ -22,7 +22,7 @@ rule gen_ref_bwa_indexes:
         """
         cd {params.rule_dir}; \
         
-        bwa index {params.ref_fa} 2> ../../../{log.stderr} > ../../../{log.stdout}
+        bwa index {params.ref_fa} 2> ../../../../{log.stderr} > ../../../../{log.stdout}
         """
 
 """

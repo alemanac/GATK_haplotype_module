@@ -133,8 +133,8 @@ rule gen_aligned_reads:
         bwa mem \
         -v 3 \
         -t 2 \
-        ../../../{input.ref} ../../../{input.fq_1} ../../../{input.fq_2} \
-        -o ../../../{output.aligned_reads} 2> ../../../{log.stderr} > ../../../{log.stdout}
+        ../../../../{input.ref} ../../../../{input.fq_1} ../../../../{input.fq_2} \
+        -o ../../../../{output.aligned_reads} 2> ../../../../{log.stderr} > ../../../../{log.stdout}
         """
 
 #TODO: turn this into a wrapper :3

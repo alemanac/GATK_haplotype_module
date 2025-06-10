@@ -1,5 +1,7 @@
 #use_only_local_container: False
 
+run_name: "run_3"
+
 java_options: "Xms3000m"
 
 ref_fna: "resources/BW25113.fna"
@@ -8,8 +10,63 @@ read_group_library: "NA"
 read_group_platform: "NA"
 read_group_platform_unit: "NA"
 
-local_tree:
+local_tree_2:
+- "SRR3722077"
+- "SRR3722078"
+- "SRR3722089"
+- "SRR3722114"
+
+my_samples: #first four: local tree in fig A; remaining: all high concentration samples
 - "SRR3722033" #sample 162
 - "SRR3722007" #sample 139
 - "SRR3721984" #sample 118
 - "SRR3721971" #sample_106 (this probably isn't the most efficient way of doing this, but I'm unsure how to otherwise with expand
+- "SRR3722201" #manifold: 064
+- "SRR3722202" #manifold: 065
+- "SRR3722204" #manifold: 067
+- "SRR3722205" #manifold: 068
+- "SRR3722206" #manifold: 069
+- "SRR3722207" #manifold: 070
+- "SRR3722209" #manifold: 071
+- "SRR3722210" #manifold: 072
+- "SRR3722211" #manifold: 073
+- "SRR3722200" #manifold: 063
+- "SRR3722137" #manifold: 024 (this doesn't appear to be in the 3000 MIC region, but apparently has 3000 MIC)
+- "SRR3722235" #manifold 095
+- "SRR3722236" #manifold 096
+- "SRR3722239" #manifold 099
+- "SRR3722240" #manifold 100
+- "SRR3721966" #manifold 101, dark red
+- "SRR3721989" #manifold 122, dark red
+- "SRR3721991" #manifold 124
+- "SRR3721995" #manifold 128
+- "SRR3721997" #manifold 130
+- "SRR3722024" #manifold 154
+- "SRR3722028" #manifold 158
+- "SRR3722030" #manifold 160
+- "SRR3722029" #manifold 159
+- "SRR3721967" #manifold 102
+- "SRR3721968" #manifold 103
+- "SRR3721969" #manifold 104
+- "SRR3721971" #manifold 106
+- "SRR3721975" #manifold 110
+- "SRR3721977" #manifold 111
+- "SRR3722014" #manifold 145
+- "SRR3722025" #manifold 155
+- "SRR3721980" #manifold 114
+- "SRR3722073" #manifold 195
+- "SRR3722072" #manifold 194
+- "SRR3722079" #manifold 200
+- "SRR3722076" #manifold 197
+- "SRR3722087" #manifold 205
+- "SRR3722077" #manifold 198
+- "SRR3722078" #manifold 199
+- "SRR3722088" #manifold 206
+- "SRR3722089" #manifold 207
+- "SRR3722113" #manifold 229
+- "SRR3722114" #manifold 230
+- "SRR3722116" #manifold 231
+- "SRR3722092" #manifold 210
+- "SRR3722109" #manifold 225
+- "SRR3722111" #manifold 227
+- "SRR3722112" #manifold 228

@@ -1,11 +1,12 @@
 import subprocess
 from pathlib import Path
 
-configfile: "workflow/config/config.yaml"
+config_path = "workflow/config/config.yaml"
+configfile: config_path
 
 reference_fasta = Path(config['ref_fna']).name
 ref_base = Path(reference_fasta).with_suffix('')
-main_dir = "results"
+main_dir = f"results/{config['run_name']}"
 
 wildcard_constraints:
     SRR = r"[R-S0-9]{10}"
@@ -16,6 +17,16 @@ include: "rules/haplotype_caller.smk"
 
 rule all:
     input:
-        variants_haplotype_caller = "results/SRR3722033/call_variants_via_haplotype_caller/variants.vcf",
-        variants_M2 = "results/SRR3722033/gen_mutect2_vcfs/variants.vcf",
-        filtered_vcf = "results/SRR3722033/gen_filtered_vcfs/filtered.vcf"
+        expand("{main_dir}/{SRR}/gen_haplotype_caller_variants/variants.vcf", main_dir=main_dir, SRR=config['local_tree_2']),
+        expand("{main_dir}/{SRR}/gen_filtered_mutect2_variants/filtered.vcf", main_dir=main_dir, SRR=config['local_tree_2']),
+        expand("{main_dir}/copied_config.yaml", main_dir=main_dir)
+
+rule copy_config:
+    output:
+        copied_config = "{main_dir}/copied_config.yaml"
+    params:
+        config_path = config_path
+    shell:
+        """
+        cp {params.config_path} {output.copied_config}
+        """

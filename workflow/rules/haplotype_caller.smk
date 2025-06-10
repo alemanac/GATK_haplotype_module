@@ -1,4 +1,4 @@
-rule call_variants_via_haplotype_caller:
+rule gen_haplotype_caller_variants:
     input:
         reads = "{main_dir}/{SRR}/gen_mq_filtered_reads/reads.bam",
         ref = f"{main_dir}/{ref_base}/ref_processing/{reference_fasta}",
@@ -6,13 +6,17 @@ rule call_variants_via_haplotype_caller:
         ref_dict = f"{main_dir}/{ref_base}/ref_processing/{ref_base}.dict",
         reads_index = "{main_dir}/{SRR}/gen_mq_filtered_reads/reads.bam.bai"
     output:
-        variants = "{main_dir}/{SRR}/call_variants_via_haplotype_caller/variants.vcf"
+        variants = "{main_dir}/{SRR}/gen_haplotype_caller_variants/variants.vcf",
+        variants_index = "{main_dir}/{SRR}/gen_haplotype_caller_variants/variants.vcf.idx",
+        assembled_regions = "{main_dir}/{SRR}/gen_haplotype_caller_variants/assembly_regions.tsv",
+        assembled_reads = "{main_dir}/{SRR}/gen_haplotype_caller_variants/assembled_reads.bam",
+        assembled_reads_index = "{main_dir}/{SRR}/gen_haplotype_caller_variants/assembled_reads.bai"
     params:
         min_allele_fraction = "0.2",
         sample_ploidy = "1"
     log:
-        stderr = "{main_dir}/{SRR}/call_variants_via_haplotype_caller/stderr",
-        stdout = "{main_dir}/{SRR}/call_variants_via_haplotype_caller/stdout"
+        stderr = "{main_dir}/{SRR}/gen_haplotype_caller_variants/stderr",
+        stdout = "{main_dir}/{SRR}/gen_haplotype_caller_variants/stdout"
     container:
         "docker://broadinstitute/gatk"
     shell:
@@ -22,7 +26,9 @@ rule call_variants_via_haplotype_caller:
         --output {output.variants} \
         --reference {input.ref} \
         --sample-ploidy {params.sample_ploidy} \
-        --read-index {input.reads_index} 2> {log.stderr} > {log.stdout}
+        --read-index {input.reads_index} \
+        --assembly-region-out {output.assembled_regions} \
+        --bam-output {output.assembled_reads} 2> {log.stderr} > {log.stdout}
         """
 
 rule gen_mutect2_vcfs: 
@@ -65,7 +71,7 @@ rule gen_filtered_vcfs:
         stats = "{main_dir}/{SRR}/gen_mutect2_vcfs/variants.vcf.stats",
         ref = f"{main_dir}/{ref_base}/ref_processing/{reference_fasta}"
     output:
-        filtered_variants = "{main_dir}/{SRR}/gen_filtered_vcfs/filtered.vcf"
+        filtered_variants = "{main_dir}/{SRR}/gen_filtered_mutect2_variants/filtered.vcf"
     params:
         allele_fraction_thres = "0.0",
         microbial_mode = "--microbial-mode"
