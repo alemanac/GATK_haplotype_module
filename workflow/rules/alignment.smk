@@ -3,21 +3,6 @@ ref_base = Path(reference_fasta).with_suffix('')
 
 #TODO: trim with cutadapt as specified in the paper
 
-rule gen_bam_index:
-    input:
-        reads = "{main_dir}/{SRR}/gen_duplicates_marked_reads/reads.bam"
-    output:
-        bam_index = "{main_dir}/{SRR}/gen_bam_index/reads.bai"
-    log:
-        stderr = "{main_dir}/{SRR}/gen_bam_index/stderr",
-        stdout = "{main_dir}/{SRR}/gen_bam_index/stdout"
-    container:
-        "docker://broadinstitute/gatk"
-    shell:
-        """
-        samtools index -b {input.reads} {output.bam_index} 2> {log.stderr} > {log.stdout}
-        """
-
 rule gen_mq_filtered_reads:
     input:
         reads = "{main_dir}/{SRR}/gen_duplicates_marked_reads/reads.bam"
@@ -136,6 +121,8 @@ rule gen_aligned_reads:
         ../../../../{input.ref} ../../../../{input.fq_1} ../../../../{input.fq_2} \
         -o ../../../../{output.aligned_reads} 2> ../../../../{log.stderr} > ../../../../{log.stdout}
         """
+
+
 
 #TODO: turn this into a wrapper :3
 rule fetch_reads:

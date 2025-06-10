@@ -12,13 +12,13 @@ wildcard_constraints:
     SRR = r"[R-S0-9]{10}"
 
 include: "rules/alignment.smk"
+include: "rules/alignment_shifted.smk"
 include: "rules/ref_processing.smk"
 include: "rules/haplotype_caller.smk"
 
 rule all:
     input:
-        expand("{main_dir}/{SRR}/gen_haplotype_caller_variants/variants.vcf", main_dir=main_dir, SRR=config['local_tree_2']),
-        expand("{main_dir}/{SRR}/gen_filtered_mutect2_variants/filtered.vcf", main_dir=main_dir, SRR=config['local_tree_2']),
+        expand("{main_dir}/{SRR}/lifted_over_and_combined_vcfs/variants.final.vcf", main_dir=main_dir, SRR=config['local_tree_2']),
         expand("{main_dir}/copied_config.yaml", main_dir=main_dir)
 
 rule copy_config:

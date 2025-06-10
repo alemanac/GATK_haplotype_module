@@ -1,3 +1,36 @@
+rule lifted_over_and_combined_vcfs:
+    input:
+        shifted_vcf = "{main_dir}/{SRR}/gen_haplotype_caller_variants_shifted/variants.vcf",
+        vcf = "{main_dir}/{SRR}/gen_haplotype_caller_variants/variants.vcf",
+        shiftback_chain = f"{main_dir}/{ref_base}/ref_processing/{ref_base}.shiftback.chain",
+        ref_dict = f"{main_dir}/{ref_base}/ref_processing/{ref_base}.dict",
+        ref_fa = f"{main_dir}/{ref_base}/ref_processing/{reference_fasta}"
+    output:
+        rejected_vcf = "{main_dir}/{SRR}/lifted_over_and_combined_vcfs/variants.rejected.vcf",
+        final_vcf = "{main_dir}/{SRR}/lifted_over_and_combined_vcfs/variants.final.vcf",
+        final_vcf_index = "{main_dir}/{SRR}/lifted_over_and_combined_vcfs/variants.final.vcf.idx"
+    log:
+        stderr_lift_over = "{main_dir}/{SRR}/lifted_over_and_combined_vcfs/lift_over_stderr",
+        stdout_lift_over = "{main_dir}/{SRR}/lifted_over_and_combined_vcfs/lift_over_stdout",
+        stderr_merge = "{main_dir}/{SRR}/lifted_over_and_combined_vcfs/merge_stderr",
+        stdout_merge = "{main_dir}/{SRR}/lifted_over_and_combined_vcfs/merge_stdout"
+    container:
+        "docker://broadinstitute/gatk"
+    shell:
+        """
+        gatk LiftoverVcf \
+        -I {input.shifted_vcf} \
+        -O {main_dir}/{wildcards.SRR}/lifted_over_and_combined_vcfs/{wildcards.SRR}.shifted_back.vcf \
+        -R {input.ref_fa} \
+        --CHAIN {input.shiftback_chain} \
+        --REJECT {output.rejected_vcf} 2> {log.stderr_lift_over} > {log.stdout_lift_over}; \
+
+        gatk MergeVcfs \
+        -I {main_dir}/{wildcards.SRR}/lifted_over_and_combined_vcfs/{wildcards.SRR}.shifted_back.vcf \
+        -I {input.vcf} \
+        -O {output.final_vcf} 2> {log.stderr_merge} > {log.stdout_merge}
+        """
+
 rule gen_haplotype_caller_variants:
     input:
         reads = "{main_dir}/{SRR}/gen_mq_filtered_reads/reads.bam",
@@ -31,62 +64,24 @@ rule gen_haplotype_caller_variants:
         --bam-output {output.assembled_reads} 2> {log.stderr} > {log.stdout}
         """
 
-rule gen_mutect2_vcfs: 
+use rule gen_haplotype_caller_variants as gen_haplotype_caller_variants_shifted with:
     input:
-        reads = "{main_dir}/{SRR}/gen_mq_filtered_reads/reads.bam",
-        ref = f"{main_dir}/{ref_base}/ref_processing/{reference_fasta}",
-        fai = f"{main_dir}/{ref_base}/ref_processing/{ref_base}.fna.fai",
-        ref_dict = f"{main_dir}/{ref_base}/ref_processing/{ref_base}.dict",
-        reads_index = "{main_dir}/{SRR}/gen_mq_filtered_reads/reads.bam.bai"
+        ref = f"{main_dir}/{ref_base}/ref_processing/{ref_base}.shifted.fna",
+        fai = f"{main_dir}/{ref_base}/ref_processing/{ref_base}.shifted.fna.fai",
+        ref_dict = f"{main_dir}/{ref_base}/ref_processing/{ref_base}.shifted.dict",
+        reads = "{main_dir}/{SRR}/gen_mq_filtered_reads_shifted/reads.bam",
+        reads_index = "{main_dir}/{SRR}/gen_mq_filtered_reads_shifted/reads.bam.bai"
     output:
-        variants = "{main_dir}/{SRR}/gen_mutect2_vcfs/variants.vcf",
-        stats = "{main_dir}/{SRR}/gen_mutect2_vcfs/variants.vcf.stats",
-        local_assemblies = "{main_dir}/{SRR}/gen_mutect2_vcfs/locally_assemblies.bam",
-        assembly_region_out = "{main_dir}/{SRR}/gen_mutect2_vcfs/assembly_region_out.tsv",
-        graph_out = "{main_dir}/{SRR}/gen_mutect2_vcfs/graph_out"
-    threads: 8
-    log:
-        stderr = "{main_dir}/{SRR}/gen_mutect2_vcfs/stderr",
-        stdout = "{main_dir}/{SRR}/gen_mutect2_vcfs/stdout"
-    container:
-        "docker://broadinstitute/gatk"
-    shell: 
-        """
-        gatk --java-options "-Xmx3000m" Mutect2 \
-        -R {input.ref} \
-        -I {input.reads} \
-        -O {output.variants} \
-        --bam-output {output.local_assemblies} \
-        --annotation StrandBiasBySample \
-        --num-matching-bases-in-dangling-end-to-recover 1 \
-        --max-reads-per-alignment-start 75 \
-        --native-pair-hmm-threads 8 \
-        --assembly-region-out {output.assembly_region_out} \
-        --graph-output {output.graph_out} 2> {log.stderr} > {log.stdout}
-        """
-
-rule gen_filtered_vcfs:
-    input:
-        variants = "{main_dir}/{SRR}/gen_mutect2_vcfs/variants.vcf",
-        stats = "{main_dir}/{SRR}/gen_mutect2_vcfs/variants.vcf.stats",
-        ref = f"{main_dir}/{ref_base}/ref_processing/{reference_fasta}"
-    output:
-        filtered_variants = "{main_dir}/{SRR}/gen_filtered_mutect2_variants/filtered.vcf"
+        variants = "{main_dir}/{SRR}/gen_haplotype_caller_variants_shifted/variants.vcf",
+        variants_index = "{main_dir}/{SRR}/gen_haplotype_caller_variants_shifted/variants.vcf.idx",
+        assembled_regions = "{main_dir}/{SRR}/gen_haplotype_caller_variants_shifted/assembly_regions.tsv",
+        assembled_reads = "{main_dir}/{SRR}/gen_haplotype_caller_variants_shifted/assembled_reads.bam",
+        assembled_reads_index = "{main_dir}/{SRR}/gen_haplotype_caller_variants_shifted/assembled_reads.bai"
     params:
-        allele_fraction_thres = "0.0",
-        microbial_mode = "--microbial-mode"
-    log: 
-        stderr = "{main_dir}/{SRR}/gen_filtered_vcfs/stderr",
-        stdout = "{main_dir}/{SRR}/gen_filtered_vcfs/stdout"
+        min_allele_fraction = "0.2",
+        sample_ploidy = "1"
+    log:
+        stderr = "{main_dir}/{SRR}/gen_haplotype_caller_variants_shifted/stderr",
+        stdout = "{main_dir}/{SRR}/gen_haplotype_caller_variants_shifted/stdout"
     container:
         "docker://broadinstitute/gatk"
-    shell:
-        """
-        gatk --java-options "-Xms2500m" FilterMutectCalls \
-        -V {input.variants} \
-        -R {input.ref} \
-        -O {output.filtered_variants} \
-        --stats {input.stats} \
-        {params.microbial_mode}\
-        --min-allele-fraction {params.allele_fraction_thres} 2> {log.stderr} > {log.stdout}
-        """	
