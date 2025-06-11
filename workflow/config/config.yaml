@@ -1,6 +1,6 @@
 #use_only_local_container: False
 
-run_name: "run_4"
+run_name: "run_5"
 
 java_options: "Xms3000m"
 
@@ -9,6 +9,9 @@ ref_fna: "resources/BW25113.fna"
 read_group_library: "NA"
 read_group_platform: "NA"
 read_group_platform_unit: "NA"
+
+test_sample:
+- "SRR3722204" 
 
 local_tree_2:
 - "SRR3722077"
