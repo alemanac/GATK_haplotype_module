@@ -4,19 +4,14 @@ from pathlib import Path
 config_path = "workflow/config/config.yaml"
 configfile: config_path
 
-#print(config)
-try:
-    reference_fasta = Path(config['ref_fna']).name
-    ref_base = Path(reference_fasta).with_suffix('')
-    main_dir = f"results/{config['run_name']}"
-except TypeError:
-    print("Type Error found.")
 
-try:
-    wildcard_constraints:
-        SRR = r"[R-S0-9]{10}"
-except TypeError:
-    print("TypeError found.")
+reference_fasta = Path(config['ref_fna']).name
+ref_base = Path(reference_fasta).with_suffix('')
+main_dir = f"results/{config['run_name']}"
+
+wildcard_constraints:
+    SRR = r"[R-S0-9]{10}"
+
 
 include: "rules/alignment.smk"
 include: "rules/alignment_shifted.smk"
