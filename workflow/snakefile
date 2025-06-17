@@ -11,10 +11,10 @@ main_dir = f"results/{config['run_name']}"
 wildcard_constraints:
     SRR = r"[R-S0-9]{10}"
 
-include: "rules/alignment.smk"
-include: "rules/alignment_shifted.smk"
-include: "rules/ref_processing.smk"
-include: "rules/haplotype_caller.smk"
+#include: "rules/alignment.smk"
+#include: "rules/alignment_shifted.smk"
+#include: "rules/ref_processing.smk"
+#include: "rules/haplotype_caller.smk"
 
 rule all:
     input:
