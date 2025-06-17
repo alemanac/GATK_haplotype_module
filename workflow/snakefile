@@ -10,11 +10,13 @@ try:
     ref_base = Path(reference_fasta).with_suffix('')
     main_dir = f"results/{config['run_name']}"
 except TypeError:
-    print("Type error found.")
+    print("Type Error found.")
 
-
-wildcard_constraints:
-    SRR = r"[R-S0-9]{10}"
+try:
+    wildcard_constraints:
+        SRR = r"[R-S0-9]{10}"
+except TypeError:
+    print("TypeError found.")
 
 include: "rules/alignment.smk"
 include: "rules/alignment_shifted.smk"
