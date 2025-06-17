@@ -1,6 +1,7 @@
 try:
     reference_fasta = Path(config['ref_fna']).name
     ref_base = Path(reference_fasta).with_suffix('')
+    main_dir = f"results/{config['run_name']}"
 except TypeError:
     print("Type error found.")
 
