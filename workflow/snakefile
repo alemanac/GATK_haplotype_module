@@ -5,9 +5,13 @@ from pathlib import Path
 #configfile: config_path
 
 print(config)
-#reference_fasta = Path(config['ref_fna']).name
-#ref_base = Path(reference_fasta).with_suffix('')
-#main_dir = f"results/{config['run_name']}"
+try:
+    reference_fasta = Path(config['ref_fna']).name
+    ref_base = Path(reference_fasta).with_suffix('')
+    main_dir = f"results/{config['run_name']}"
+except TypeError:
+    print("Type error found.")
+
 
 wildcard_constraints:
     SRR = r"[R-S0-9]{10}"
