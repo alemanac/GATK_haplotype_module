@@ -1,10 +1,10 @@
 import subprocess
 from pathlib import Path
 
-#config_path = "workflow/config/config.yaml"
-#configfile: config_path
+config_path = "workflow/config/config.yaml"
+configfile: config_path
 
-print(config)
+#print(config)
 try:
     reference_fasta = Path(config['ref_fna']).name
     ref_base = Path(reference_fasta).with_suffix('')

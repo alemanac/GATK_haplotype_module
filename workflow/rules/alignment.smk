@@ -6,7 +6,7 @@ except TypeError:
 
 #TODO: trim with cutadapt as specified in the paper
 
-rule gen_mq_filtered_reads:`
+rule gen_mq_filtered_reads:
     input:
         reads = "{main_dir}/{SRR}/gen_duplicates_marked_reads/reads.bam"
     output:
